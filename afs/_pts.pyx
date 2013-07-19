@@ -112,7 +112,6 @@ cdef class PTEntry:
 cdef int _ptentry_from_c(PTEntry p_entry, prcheckentry * c_entry) except -1:
     if p_entry is None:
         raise TypeError
-        return -1
 
     p_entry.flags = c_entry.flags
     p_entry.id = c_entry.id
@@ -127,7 +126,6 @@ cdef int _ptentry_from_c(PTEntry p_entry, prcheckentry * c_entry) except -1:
 cdef int _ptentry_to_c(prcheckentry * c_entry, PTEntry p_entry) except -1:
     if p_entry is None:
         raise TypeError
-        return -1
 
     c_entry.flags = p_entry.flags
     c_entry.id = p_entry.id
