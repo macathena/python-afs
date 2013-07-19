@@ -225,7 +225,9 @@ cdef class PTS:
 
         self.cell = info.name
 
-        if sec > 0:
+        if sec == 0:
+            sc = rxnull_NewClientSecurityObject()
+        else:
             strncpy(prin.cell, info.name, sizeof(prin.cell))
             prin.instance[0] = 0
             strncpy(prin.name, "afs", sizeof(prin.name))
@@ -235,6 +237,7 @@ cdef class PTS:
                 if sec >= 2:
                     # No really - we wanted authentication
                     pyafs_error(code)
+                sc = rxnull_NewClientSecurityObject()
                 sec = 0
             else:
                 if sec == 3:
@@ -244,11 +247,7 @@ cdef class PTS:
                 sc = rxkad_NewClientSecurityObject(level, &token.sessionKey,
                                                    token.kvno, token.ticketLen,
                                                    token.ticket)
-
-        if sec == 0:
-            sc = rxnull_NewClientSecurityObject()
-        else:
-            sec = 2
+                sec = 2
 
         memset(serverconns, 0, sizeof(serverconns))
         for 0 <= i < info.numServers:
