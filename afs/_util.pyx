@@ -17,7 +17,7 @@ cdef int _init = 0
 
 # Function for "reading" data from a pioctl
 # "outbuffer" will get populated with the data in question
-cdef extern int pioctl_read(char *path, afs_int32 op, void *outbuffer,
+cdef int pioctl_read(char *path, afs_int32 op, void *outbuffer,
                             unsigned short size, afs_int32 follow) except -1:
     cdef ViceIoctl blob
     cdef afs_int32 code
@@ -42,7 +42,7 @@ cdef extern int pioctl_read(char *path, afs_int32 op, void *outbuffer,
 # Pass NULL for outbuffer in cases where we don't get anything
 # back (e.g. VIOCSETAL)
 # "outsize" will be ignored (forced to 0) if "outbuffer" is NULL
-cdef extern int pioctl_write(char *path, afs_int32 op, char *inbuffer,
+cdef int pioctl_write(char *path, afs_int32 op, char *inbuffer,
                              void *outbuffer, afs_int32 outsize,
                              afs_int32 follow) except -1:
     cdef ViceIoctl blob
