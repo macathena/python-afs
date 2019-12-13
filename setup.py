@@ -10,6 +10,7 @@ from Cython.Distutils import build_ext
 import os
 
 for root in ['/Library/OpenAFS/Tools',
+             '/opt/local',
              '/usr/local',
              '/usr/afsws',
              '/usr']:
@@ -39,7 +40,7 @@ def PyAFSExtension(module, *args, **kwargs):
 
 setup(
     name="PyAFS",
-    version="0.2.2",
+    version="0.2.3",
     description="PyAFS - Python bindings for AFS",
     author="Evan Broder",
     author_email="broder@mit.edu",
