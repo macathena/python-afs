@@ -1,12 +1,13 @@
+# cython: c_string_type=str, c_string_encoding=ascii
 from afs._util cimport *
-from afs._util import pyafs_error
+from afs._util import path_to_bytes
 import socket
 import struct
 import logging
 
 log = logging.getLogger('afs._fs')
 
-def whichcell(char* path):
+def whichcell(path):
     """
     whichcell(path) -> str
 
@@ -14,10 +15,10 @@ def whichcell(char* path):
     """
     cdef char cell[MAXCELLCHARS]
 
-    pioctl_read(path, VIOC_FILE_CELL_NAME, cell, sizeof(cell), 1)
+    pioctl_read(path_to_bytes(path), VIOC_FILE_CELL_NAME, cell, sizeof(cell), 1)
     return cell
 
-def _lsmount(char* parent, char* path):
+def _lsmount(parent, path):
     """
     _lsmount(parent, path) -> str
 
@@ -26,10 +27,10 @@ def _lsmount(char* parent, char* path):
     """
     cdef char mtpt[AFS_PIOCTL_MAXSIZE]
 
-    pioctl_write(parent, VIOC_AFS_STAT_MT_PT, path, mtpt, sizeof(mtpt), 1)
+    pioctl_write(path_to_bytes(parent), VIOC_AFS_STAT_MT_PT, path_to_bytes(path), mtpt, sizeof(mtpt), 1)
     return mtpt
 
-def _volume_status(char* path):
+def _volume_status(path):
     """
     _volume_status(path) -> tuple()
 
@@ -45,7 +46,7 @@ def _volume_status(char* path):
     cdef char *name, *offmsg
     cdef object py_volstat
 
-    pioctl_read(path, VIOCGETVOLSTAT, volstat_buf, sizeof(volstat_buf), 1)
+    pioctl_read(path_to_bytes(path), VIOCGETVOLSTAT, volstat_buf, sizeof(volstat_buf), 1)
     volstat = <VolumeStatus *>volstat_buf
     # You can't assign a char * to a temporary Python string
     # (e.g. an array slice)
@@ -71,7 +72,7 @@ def _volume_status(char* path):
     py_volstat['PartMaxBlocks'] = volstat.PartMaxBlocks
     return (name, offmsg, py_volstat)
 
-def _fid(char *path):
+def _fid(path):
     """
     _fid(path) -> dict()
 
@@ -80,7 +81,7 @@ def _fid(char *path):
     cdef VenusFid vfid
     cdef object py_fid
 
-    pioctl_read(path, VIOCGETFID, <char *>&vfid, sizeof(VenusFid), 1)
+    pioctl_read(path_to_bytes(path), VIOCGETFID, <char *>&vfid, sizeof(VenusFid), 1)
     py_fid = dict()
     py_fid['Volume'] = vfid.Fid.Volume
     py_fid['Vnode'] = vfid.Fid.Vnode
@@ -88,7 +89,7 @@ def _fid(char *path):
     py_fid['Cell'] = vfid.Cell
     return py_fid
 
-def _whereis(char* path):
+def _whereis(path):
     """
     _whereis(path) -> list()
 
@@ -103,7 +104,7 @@ def _whereis(char* path):
     cdef object py_result
 
     py_result = list()
-    pioctl_read(path, VIOCWHEREIS, whereis_buf, sizeof(whereis_buf), 1)
+    pioctl_read(path_to_bytes(path), VIOCWHEREIS, whereis_buf, sizeof(whereis_buf), 1)
     hosts = <afs_uint32 *>whereis_buf
     for j in range(0, AFS_MAXHOSTS):
         if hosts[j] == 0:

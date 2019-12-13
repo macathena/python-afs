@@ -1,5 +1,6 @@
+# cython: c_string_type=str, c_string_encoding=ascii
 from afs._util cimport *
-from afs._util import pyafs_error
+from afs._util import path_to_bytes
 
 cdef extern from "afs/prs_fs.h":
     enum:
@@ -34,15 +35,15 @@ USR7 = PRSFS_USR7
 
 DEF MAXSIZE = 2048
 
-def getAcl(char* dir, int follow=1):
+def getAcl(dir, int follow=1):
     cdef char space[MAXSIZE]
-    pioctl_read(dir, VIOCGETAL, space, MAXSIZE, follow)
+    pioctl_read(path_to_bytes(dir), VIOCGETAL, space, MAXSIZE, follow)
     return space
 
-def getCallerAccess(char *dir, int follow=1):
+def getCallerAccess(dir, int follow=1):
     cdef vcxstat2 stat
-    pioctl_read(dir, VIOC_GETVCXSTATUS2, <void*>&stat, sizeof(vcxstat2), follow)
+    pioctl_read(path_to_bytes(dir), VIOC_GETVCXSTATUS2, <void*>&stat, sizeof(vcxstat2), follow)
     return stat.callerAccess
 
-def setAcl(char* dir, char* acl, int follow=1):
-    pioctl_write(dir, VIOCSETAL, acl, NULL, 0, follow)
+def setAcl(dir, char* acl, int follow=1):
+    pioctl_write(path_to_bytes(dir), VIOCSETAL, acl, NULL, 0, follow)

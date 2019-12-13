@@ -1,7 +1,7 @@
 """
 General PyAFS utilities, such as error handling
 """
-
+# cython: c_string_type=str, c_string_encoding=ascii
 import sys
 import logging
 
@@ -94,3 +94,8 @@ def pyafs_error(code):
 
     if code != 0:
         raise AFSException(code)
+
+def path_to_bytes(path):
+    if isinstance(path, unicode):
+        return path.encode(sys.getfilesystemencoding(), 'surrogateescape')
+    return path

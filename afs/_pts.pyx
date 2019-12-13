@@ -1,3 +1,4 @@
+# cython: c_string_type=str, c_string_encoding=ascii
 from afs._util cimport *
 from afs._util import pyafs_error
 import re

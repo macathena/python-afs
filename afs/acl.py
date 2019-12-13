@@ -11,7 +11,7 @@ _canonical = {
     "none": "",
 }
 
-_reverseCanonical = dict((y, x) for (x, y) in _canonical.iteritems())
+_reverseCanonical = dict((y, x) for (x, y) in _canonical.items())
 
 _charBitAssoc = [
     ('r', READ),

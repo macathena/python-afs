@@ -381,7 +381,7 @@ class PTS(_pts.PTS):
                                 elt)
             return ident
 
-        elif isinstance(ident, basestring):
+        elif isinstance(ident, (str, bytes)):
             return PTEntry(self, name=ident)
         else:
             return PTEntry(self, id=ident)
