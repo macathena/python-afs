@@ -24,7 +24,7 @@ if os.path.exists('%s/lib/libafsauthent_pic.a' % root) or os.path.exists('%s/lib
     suffix = '_pic'
 else:
     suffix = ''
-libraries = ['afsauthent%s' % suffix, 'afsrpc%s' % suffix, 'resolv']
+libraries = ['afsauthent%s' % suffix, 'afsrpc%s' % suffix, 'rokenafs', 'afshcrypto', 'resolv']
 define_macros = [('AFS_PTHREAD_ENV', None)]
 
 def PyAFSExtension(module, *args, **kwargs):
