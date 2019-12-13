@@ -119,7 +119,7 @@ class ACL(object):
     def set(self, user, bitmask, negative=False):
         """Set the bitmask for a given user"""
         if bitmask < 0 or bitmask > max(_char2bit.values()):
-            raise ValueError, "Invalid bitmask"
+            raise ValueError("Invalid bitmask")
         if negative:
             self.neg[user] = bitmask
         else:
