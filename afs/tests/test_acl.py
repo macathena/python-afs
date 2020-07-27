@@ -11,7 +11,7 @@ def test_readRights():
 
 def test_retrieve():
     assert acl.ACL.retrieve('/afs/athena.mit.edu/contrib/bitbucket2').pos['system:anyuser'] & acl.WRITE
-    assert acl.ACL.retrieve('/afs/athena.mit.edu/user/t/a/tabbott').neg['yuranlu'] & acl.USR0
+    assert acl.ACL.retrieve('/afs/athena.mit.edu/astaff/project/macathena/.python-afs-test').neg['mrittenb'] & acl.USR0
 
 def test_getCallerAccess():
     assert acl.getCallerAccess('/afs/athena.mit.edu/contrib/bitbucket2') & acl.WRITE
