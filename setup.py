@@ -8,6 +8,7 @@ from distutils.core import setup
 from distutils.extension import Extension
 from Cython.Distutils import build_ext
 import os
+import subprocess
 
 for root in ['/Library/OpenAFS/Tools',
              '/opt/local',
@@ -25,13 +26,33 @@ if os.path.exists('%s/lib/libafsauthent_pic.a' % root) or os.path.exists('%s/lib
     suffix = '_pic'
 else:
     suffix = ''
-libraries = ['afsauthent%s' % suffix, 'afsrpc%s' % suffix, 'rokenafs', 'afshcrypto', 'resolv']
+heimdal_suffix = ''
+if os.path.exists('%s/lib/librokenafs.a'):
+    heimdal_suffix = 'afs'
+libraries = ['afsauthent%s' % suffix, 'afsrpc%s' % suffix, 'roken%s' % heimdal_suffix, '%shcrypto' % heimdal_suffix, 'resolv']
+extra_link_args = []
+krb5_libs = ['krb5']
+if os.path.exists('/usr/bin/krb5-config.heimdal'):
+    extra_link_args = [
+        arg
+        for arg in
+        subprocess.check_output(['krb5-config.heimdal', '--libs']).decode('ascii').strip().split(' ')
+        if not arg.startswith('-l')
+    ]
+    mit_args = [
+        arg
+        for arg in
+        subprocess.check_output(['krb5-config.mit', '--libs']).decode('ascii').strip().split(' ')
+        if arg.startswith('-L')
+    ]
+    extra_link_args.append(mit_args[0][2:] + '/libkrb5.so')
 define_macros = [('AFS_PTHREAD_ENV', None)]
 
 def PyAFSExtension(module, *args, **kwargs):
     kwargs.setdefault('libraries', []).extend(libraries)
     kwargs.setdefault('include_dirs', []).extend(include_dirs)
     kwargs.setdefault('library_dirs', []).extend(library_dirs)
+    kwargs.setdefault('extra_link_args', []).extend(extra_link_args)
     kwargs.setdefault('define_macros', []).extend(define_macros)
     return Extension(module,
                      ["%s.pyx" % module.replace('.', '/')],
@@ -54,7 +75,7 @@ setup(
         PyAFSExtension("afs._util"),
         PyAFSExtension("afs._acl"),
         PyAFSExtension("afs._fs"),
-        PyAFSExtension("afs._pts", libraries=['krb5']),
+        PyAFSExtension("afs._pts", libraries=krb5_libs),
         ],
     cmdclass= {"build_ext": build_ext}
 )
